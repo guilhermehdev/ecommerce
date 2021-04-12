@@ -37,11 +37,30 @@ class ProductSchema extends Schema {
         .inTable('products')
         .onDelete('cascade');
     });
+
+    this.create('category_product', table => {
+      table.increments();
+      table.integer('category_id').unsigned();
+      table.integer('product_id').unsigned();
+
+      table
+        .foreign('product_id')
+        .references('id')
+        .inTable('products')
+        .onDelete('cascade');
+
+      table
+        .foreign('category_id')
+        .references('id')
+        .inTable('categories')
+        .onDelete('cascade');
+    });
   }
 
   down() {
     this.drop('products');
     this.drop('image_product');
+    this.drop('category_product');
   }
 }
 
