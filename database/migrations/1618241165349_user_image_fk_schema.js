@@ -11,7 +11,6 @@ class UserImageFkSchema extends Schema {
         .references('id')
         .inTable('images')
         .onDelete('cascade');
-      table.timestamps();
     });
   }
 
