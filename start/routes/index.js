@@ -21,3 +21,5 @@ Route.get('/', () => {
 }).as('home');
 
 require('./auth');
+require('./admin');
+require('./client');
