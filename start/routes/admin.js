@@ -55,8 +55,8 @@ Route.group(() => {
     .apiOnly()
     .validator(
       new Map([
-        [['user.store'], ['User/StoreUser']],
-        [['user.update'], ['User/StoreUser']],
+        [['user.store'], ['Admin/StoreUser']],
+        [['user.update'], ['Admin/StoreUser']],
       ])
     );
 

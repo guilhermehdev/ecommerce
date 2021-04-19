@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const BaseExceptionHandler = use('BaseExceptionHandler');
-const logger = use('Logger');
+const BaseExceptionHandler = use('BaseExceptionHandler')
+const Logger = use('Logger')
 
 /**
  * This class handles all exceptions thrown during
@@ -22,7 +22,13 @@ class ExceptionHandler extends BaseExceptionHandler {
    * @return {void}
    */
   async handle(error, { request, response }) {
-    response.status(error.status).send(error.message);
+    if(error.name === 'ValidationException'){
+      response.status(error.status).send({
+        error: error.messages
+      })
+      return 
+    }
+    response.status(error.status).send(error.message)
   }
 
   /**
@@ -37,14 +43,14 @@ class ExceptionHandler extends BaseExceptionHandler {
    */
   async report(error, { request }) {
     if (error.status >= 500) {
-      logger.error(error.message, {
+      Logger.error(error.message, {
         stack: error.stack,
         message: error.message,
         status: error.status,
-        name: error.name,
-      });
+        name: error.name
+      })
     }
   }
 }
 
-module.exports = ExceptionHandler;
+module.exports = ExceptionHandler
