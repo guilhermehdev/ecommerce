@@ -16,8 +16,8 @@ Route.group(() => {
     .apiOnly()
     .validator(
       new Map([
-        [['category.store'], ['Category/Store']],
-        [['category.update'], ['Category/Update']],
+        [['category.store'], ['Admin/StoreCategory']],
+        [['category.update'], ['Admin/StoreCategory']],
       ])
     );
 
@@ -38,7 +38,7 @@ Route.group(() => {
   Route.delete('order/:id/discount', 'OrderController.removeDiscount');
   Route.resource('order', 'OrderController')
     .apiOnly()
-    .validator(new Map([[['order.store'], ['Order/Order']]]));
+    .validator(new Map([[['order.store'], ['Admin/StoreOrder']]]));
 
   /**
    * Images Resource Routes

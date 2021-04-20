@@ -9,23 +9,32 @@ const Route = use('Route');
 Route.group(() => {
   Route.post('/register', 'AuthController.register')
     .as('auth.register')
-    .validator('Clients/ClientRegister');
+    .middleware(['guest'])
+    .validator('Auth/Register');
 
   Route.post('login', 'AuthController.login')
     .as('auth.login')
-    .validator('Clients/ClientLogin');
+    .middleware(['guest'])
+    .validator('Auth/Login');
 
   Route.post('refresh', 'AuthController.refresh')
     .as('auth.refresh')
+    .middleware(['guest'])
     .validator('Clients/ClientRefreshToken');
 
   Route.post('logout', 'AuthController.logout')
     .as('auth.logout')
     .middleware(['auth']);
 
-  Route.get('reset-password', 'AuthController.remember').as('auth.remember');
-  Route.post('reset-password', 'AuthController.forgot').as('auth.forgot');
-  Route.put('reset-password', 'AuthController.reset').as('auth.reset');
+  Route.get('reset-password', 'AuthController.remember')
+    .as('auth.remember')
+    .middleware(['guest']);
+  Route.post('reset-password', 'AuthController.forgot')
+    .as('auth.forgot')
+    .middleware(['guest']);
+  Route.put('reset-password', 'AuthController.reset')
+    .as('auth.reset')
+    .middleware(['guest']);
   // .validator('Clients/ClientRefreshToken')
 })
   .prefix('v1/auth')
