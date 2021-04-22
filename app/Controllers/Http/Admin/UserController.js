@@ -1,9 +1,7 @@
-'use strict'
+'use strict';
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
-
+const User = use('App/Models/User');
+const UserTransformer = use('App/Transformers/User/UserTransformer');
 /**
  * Resourceful controller for interacting with users
  */
@@ -17,19 +15,20 @@ class UserController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
+  async index({ request, transform, pagination }) {
+    const { name } = request.only(['name']);
 
-  /**
-   * Render a form to be used for creating a new user.
-   * GET users/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+    const query = User.query();
+
+    if (name) {
+      query
+        .where('name', 'LIKE', `%${name}%`)
+        .orWhere('surname', 'LIKE', `%${name}%`)
+        .orWhere('email', 'LIKE', `%${name}%`);
+    }
+
+    const users = await query.paginate(pagination.page, pagination.perpage);
+    return transform.paginate(users, UserTransformer);
   }
 
   /**
@@ -40,7 +39,20 @@ class UserController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, response, transform }) {
+    const data = request.only([
+      'name',
+      'surname',
+      'email',
+      'password',
+      'image_id',
+    ]);
+
+    const user = await User.create(data);
+
+    return response
+      .status(201)
+      .send(await transform.item(user, UserTransformer));
   }
 
   /**
@@ -52,19 +64,9 @@ class UserController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
-
-  /**
-   * Render a form to update an existing user.
-   * GET users/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+  async show({ params, request, transform }) {
+    const user = await User.findOrFail(params.id);
+    return transform.item(user, UserTransformer);
   }
 
   /**
@@ -75,7 +77,19 @@ class UserController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
+  async update({ params, request, transform }) {
+    const user = await User.findOrFail(params.id);
+    const data = request.only([
+      'name',
+      'surname',
+      'email',
+      'password',
+      'image_id',
+    ]);
+
+    user.merge(data);
+    await user.save();
+    return transform.item(user, UserTransformer);
   }
 
   /**
@@ -86,8 +100,17 @@ class UserController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params, response }) {
+    try {
+      const user = await User.findOrFail(params.id);
+      await user.delete();
+      return response.status(204).send();
+    } catch (error) {
+      return response
+        .status(400)
+        .send({ message: 'Erro ao deletar o usuário solicitado!' });
+    }
   }
 }
 
-module.exports = UserController
+module.exports = UserController;
