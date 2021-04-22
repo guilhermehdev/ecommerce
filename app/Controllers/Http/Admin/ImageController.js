@@ -1,93 +1,146 @@
-'use strict'
+'use strict';
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
+const { manage_multiple_uploads, manage_single_upload } = use('App/Helpers');
+const Image = use('App/Models/Image');
+const fs = use('fs'); // require('fs')
+const Helpers = use('Helpers');
+const Transformer = use('App/Transformers/Image/ImageTransformer');
 
-/**
- * Resourceful controller for interacting with images
- */
 class ImageController {
-  /**
-   * Show a list of all images.
-   * GET images
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async index ({ request, response, view }) {
+  async bulkUpload({ request, response, transform }) {
+    const fileJar = request.file('images', {
+      types: ['image'],
+      size: '2mb',
+    });
+
+    let files = await manage_multiple_uploads(fileJar);
+    let images = [];
+    await Promise.all(
+      files.successes.map(async file => {
+        let image = await Image.create({
+          path: file.fileName,
+          size: file.size,
+          original_name: file.clientName,
+          extension: file.subtype,
+        });
+        images.push(image);
+      })
+    );
+
+    images = await transform.collection(images, Transformer);
+
+    return response
+      .status(201)
+      .send({ successes: images, errors: files.errors });
   }
 
-  /**
-   * Render a form to be used for creating a new image.
-   * GET images/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async index({ request, response, pagination }) {
+    let images = await Image.query()
+      .orderBy('id', 'DESC')
+      .paginate(pagination.page, pagination.perpage);
+    return response.send(images);
   }
 
-  /**
-   * Create/save a new image.
-   * POST images
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store ({ request, response }) {
+  async store({ request, response, transform }) {
+    try {
+      // captura uma lista de imagens
+      const fileJar = request.file('images', {
+        types: ['image'],
+        size: '2mb',
+      });
+
+      // retorno da api
+      let images = [];
+
+      // caso seja enviado um único arquivo, trata como single file
+      if (!fileJar.files) {
+        const file = await manage_single_upload(fileJar);
+        if (file.moved()) {
+          const imagem = await Image.create({
+            path: file.fileName,
+            size: file.size,
+            original_name: file.clientName,
+            extension: file.subtype,
+          });
+
+          images.push(imagem);
+          images = await transform.collection(images, Transformer);
+
+          return response.status(201).send({ success: images, errors: {} });
+        }
+
+        return response.status(500).send({
+          message: 'Não foi possível processar a sua solicitação!',
+        });
+      }
+
+      // caso sejam enviados vários arquivos
+      let files = await manage_multiple_uploads(fileJar);
+
+      await Promise.all(
+        files.successes.map(async file => {
+          const image = await Image.create({
+            path: file.fileName,
+            size: file.size,
+            original_name: file.clientName,
+            extension: file.subtype,
+          });
+          images.push(image);
+        })
+      );
+      images = await transform.collection(images, Transformer);
+
+      return response
+        .status(201)
+        .send({ success: images, errrors: files.errors });
+    } catch (e) {
+      return response.status(500).send({
+        message: 'Não foi possível processar a sua soliticação',
+        error: e.message,
+      });
+    }
   }
 
-  /**
-   * Display a single image.
-   * GET images/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show ({ params, request, response, view }) {
+  async update({ request, response, params: { id }, transform }) {
+    const image = await Image.findOrFail(id);
+    try {
+      image.merge(request.only(['original_name']));
+      await image.save();
+      return response
+        .status(200)
+        .send(await transform.item(image, Transformer));
+    } catch (e) {
+      return response.status(500).send({
+        message: 'Não foi possível processar a sua soliticação',
+        error: e.message,
+      });
+    }
   }
 
-  /**
-   * Render a form to update an existing image.
-   * GET images/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+  async show({ response, params, transform }) {
+    const image = await Image.findOrFail(params.id);
+    return response.send(await transform.item(image, Transformer));
   }
 
-  /**
-   * Update image details.
-   * PUT or PATCH images/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
-  }
+  async destroy({ response, params }) {
+    const image = await Image.findOrFail(params.id);
 
-  /**
-   * Delete a image with id.
-   * DELETE images/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async destroy ({ params, request, response }) {
+    try {
+      let filePath = Helpers.publicPath(`uploads/${image.path}`);
+
+      await fs.unlink(filePath, err => {
+        // if (err) throw err
+      });
+
+      await image.delete();
+      return response.status(204).send();
+    } catch (e) {
+      return response.status(400).send({
+        message: 'Não foi possível processar a sua soliticação',
+        error: e.message,
+      });
+    }
   }
 }
 
-module.exports = ImageController
+module.exports = ImageController;
