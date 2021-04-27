@@ -1,34 +1,34 @@
-'use strict';
+'use strict'
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
-const Model = use('Model');
+const Model = use('Model')
 
 class Order extends Model {
   static boot() {
-    super.boot();
+    super.boot()
 
-    this.addHook('afterFind', 'OrderHook.updateValues');
-    this.addHook('afterPaginate', 'OrderHook.updateCollectionValues');
+    this.addHook('afterFind', 'OrderHook.updateValues')
+    this.addHook('afterPaginate', 'OrderHook.updateCollectionValues')
   }
 
   /**
    * Relacionamento entre o pedido e os itens do pedido
    */
   items() {
-    return this.hasMany('App/Models/OrderItem');
+    return this.hasMany('App/Models/OrderItem')
   }
 
   coupons() {
-    return this.belongsToMany('App/Models/Coupon');
+    return this.belongsToMany('App/Models/Coupon')
   }
 
   discounts() {
-    return this.hasMany('App/Models/Discount');
+    return this.hasMany('App/Models/Discount')
   }
 
   user() {
-    return this.belongsTo('App/Models/User', 'user_id', 'id');
+    return this.belongsTo('App/Models/User', 'user_id', 'id')
   }
 }
 
-module.exports = Order;
+module.exports = Order

@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
 /** @type {import('@adonisjs/framework/src/Env')} */
-const Env = use('Env');
+const Env = use('Env')
 
 module.exports = {
   /*
@@ -15,7 +15,7 @@ module.exports = {
   |
   */
 
-  name: Env.get('APP_NAME', 'AdonisJs'),
+  name: Env.get('APP_NAME', 'E-commerce Realtime'),
 
   /*
   |--------------------------------------------------------------------------
@@ -23,7 +23,7 @@ module.exports = {
   |--------------------------------------------------------------------------
   |
   | App key is a randomly generated 16 or 32 characters long string required
-  | to encrypt cookies, sessions and other sensitive data.
+  | to encrypted cookies, sessions and other sensitive data.
   |
   */
   appKey: Env.getOrFail('APP_KEY'),
@@ -47,14 +47,14 @@ module.exports = {
     | Trust Proxy
     |--------------------------------------------------------------------------
     |
-    | Trust proxy defines whether X-Forwarded-* headers should be trusted or not.
+    | Trust proxy defines whether X-Forwaded-* headers should be trusted or not.
     | When your application is behind a proxy server like nginx, these values
     | are set automatically and should be trusted. Apart from setting it
     | to true or false Adonis supports handful or ways to allow proxy
     | values. Read documentation for that.
     |
     */
-    trustProxy: false,
+    trustProxy: true,
 
     /*
     |--------------------------------------------------------------------------
@@ -92,7 +92,7 @@ module.exports = {
     | response.send('Hello', { ignoreEtag: true })
     |
     */
-    etag: false,
+    etag: true
   },
 
   views: {
@@ -105,7 +105,7 @@ module.exports = {
     | production to optimize view loading time.
     |
     */
-    cache: Env.get('CACHE_VIEWS', true),
+    cache: Env.get('CACHE_VIEWS', true)
   },
 
   static: {
@@ -144,7 +144,7 @@ module.exports = {
     | that exists will be served. Example: ['html', 'htm'].
     |
     */
-    extensions: false,
+    extensions: false
   },
 
   locales: {
@@ -171,7 +171,7 @@ module.exports = {
     | based on HTTP headers/query string.
     |
     */
-    locale: 'en',
+    locale: 'en'
   },
 
   logger: {
@@ -200,7 +200,7 @@ module.exports = {
     console: {
       driver: 'console',
       name: 'adonis-app',
-      level: 'info',
+      level: 'info'
     },
 
     /*
@@ -218,8 +218,8 @@ module.exports = {
       driver: 'file',
       name: 'ecommerce',
       filename: 'ecommerce.log',
-      level: 'info',
-    },
+      level: 'error'
+    }
   },
 
   /*
@@ -229,13 +229,13 @@ module.exports = {
   |
   | The following cookie options are generic settings used by AdonisJs to create
   | cookies. However, some parts of the application like `sessions` can have
-  | separate settings for cookies inside `config/session.js`.
+  | seperate settings for cookies inside `config/session.js`.
   |
   */
   cookie: {
     httpOnly: true,
     sameSite: false,
     path: '/',
-    maxAge: 7200,
-  },
-};
+    maxAge: 7200
+  }
+}

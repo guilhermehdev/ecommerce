@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const User = use('App/Models/User');
-const UserTransformer = use('App/Transformers/User/UserTransformer');
+const User = use('App/Models/User')
+const UserTransformer = use('App/Transformers/User/UserTransformer')
 /**
  * Resourceful controller for interacting with users
  */
@@ -16,19 +16,19 @@ class UserController {
    * @param {View} ctx.view
    */
   async index({ request, transform, pagination }) {
-    const { name } = request.only(['name']);
+    const { name } = request.only(['name'])
 
-    const query = User.query();
+    const query = User.query()
 
     if (name) {
       query
         .where('name', 'LIKE', `%${name}%`)
         .orWhere('surname', 'LIKE', `%${name}%`)
-        .orWhere('email', 'LIKE', `%${name}%`);
+        .orWhere('email', 'LIKE', `%${name}%`)
     }
 
-    const users = await query.paginate(pagination.page, pagination.perpage);
-    return transform.paginate(users, UserTransformer);
+    const users = await query.paginate(pagination.page, pagination.perpage)
+    return transform.paginate(users, UserTransformer)
   }
 
   /**
@@ -45,14 +45,14 @@ class UserController {
       'surname',
       'email',
       'password',
-      'image_id',
-    ]);
+      'image_id'
+    ])
 
-    const user = await User.create(data);
+    const user = await User.create(data)
 
     return response
       .status(201)
-      .send(await transform.item(user, UserTransformer));
+      .send(await transform.item(user, UserTransformer))
   }
 
   /**
@@ -65,8 +65,8 @@ class UserController {
    * @param {View} ctx.view
    */
   async show({ params, request, transform }) {
-    const user = await User.findOrFail(params.id);
-    return transform.item(user, UserTransformer);
+    const user = await User.findOrFail(params.id)
+    return transform.item(user, UserTransformer)
   }
 
   /**
@@ -78,18 +78,18 @@ class UserController {
    * @param {Response} ctx.response
    */
   async update({ params, request, transform }) {
-    const user = await User.findOrFail(params.id);
+    const user = await User.findOrFail(params.id)
     const data = request.only([
       'name',
       'surname',
       'email',
       'password',
-      'image_id',
-    ]);
+      'image_id'
+    ])
 
-    user.merge(data);
-    await user.save();
-    return transform.item(user, UserTransformer);
+    user.merge(data)
+    await user.save()
+    return transform.item(user, UserTransformer)
   }
 
   /**
@@ -102,15 +102,15 @@ class UserController {
    */
   async destroy({ params, response }) {
     try {
-      const user = await User.findOrFail(params.id);
-      await user.delete();
-      return response.status(204).send();
+      const user = await User.findOrFail(params.id)
+      await user.delete()
+      return response.status(204).send()
     } catch (error) {
       return response
         .status(400)
-        .send({ message: 'Erro ao deletar o usuário solicitado!' });
+        .send({ message: 'Erro ao deletar o usuário solicitado!' })
     }
   }
 }
 
-module.exports = UserController;
+module.exports = UserController

@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 /*
 |--------------------------------------------------------------------------
@@ -16,12 +16,13 @@ const providers = [
   '@adonisjs/bodyparser/providers/BodyParserProvider',
   '@adonisjs/cors/providers/CorsProvider',
   '@adonisjs/lucid/providers/LucidProvider',
-  '@adonisjs/mail/providers/MailProvider',
-  '@adonisjs/validator/providers/ValidatorProvider',
-  '@adonisjs/websocket/providers/WsProvider',
   'adonis-acl/providers/AclProvider',
+  '@adonisjs/validator/providers/ValidatorProvider',
   'adonis-bumblebee/providers/BumblebeeProvider',
-];
+  '@adonisjs/mail/providers/MailProvider',
+  '@adonisjs/framework/providers/ViewProvider',
+  '@adonisjs/websocket/providers/WsProvider'
+]
 
 /*
 |--------------------------------------------------------------------------
@@ -35,8 +36,8 @@ const providers = [
 const aceProviders = [
   '@adonisjs/lucid/providers/MigrationsProvider',
   'adonis-acl/providers/CommandsProvider',
-  'adonis-bumblebee/providers/CommandsProvider',
-];
+  'adonis-bumblebee/providers/CommandsProvider'
+]
 
 /*
 |--------------------------------------------------------------------------
@@ -52,8 +53,8 @@ const aceProviders = [
 */
 const aliases = {
   Role: 'Adonis/Acl/Role',
-  Permission: 'Adonis/Acl/Permission',
-};
+  Permission: 'Adonis/Acl/Permission'
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +64,6 @@ const aliases = {
 | Here you store ace commands for your package
 |
 */
-const commands = [];
+const commands = ['App/Commands/Rmupload']
 
-module.exports = { providers, aceProviders, aliases, commands };
+module.exports = { providers, aceProviders, aliases, commands }

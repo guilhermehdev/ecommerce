@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
-const Route = use('Route');
+const Route = use('Route')
 
 /**
  * Administration Routes V1
@@ -16,37 +16,37 @@ Route.group(() => {
     .apiOnly()
     .validator(
       new Map([
-        [['category.store'], ['Admin/StoreCategory']],
-        [['category.update'], ['Admin/StoreCategory']],
+        [['category.store'], ['Category/Store']],
+        [['category.update'], ['Category/Update']]
       ])
-    );
+    )
 
   /**
    * Products Resource Routes
    */
-  Route.resource('product', 'ProductController').apiOnly();
+  Route.resource('product', 'ProductController').apiOnly()
 
   /**
    * Coupons Resource Routes
    */
-  Route.resource('coupon', 'CouponController').apiOnly();
+  Route.resource('coupon', 'CouponController').apiOnly()
 
   /**
    * Orders Resource Routes
    */
-  Route.post('order/:id/discount', 'OrderController.applyDiscount');
-  Route.delete('order/:id/discount', 'OrderController.removeDiscount');
+  Route.post('order/:id/discount', 'OrderController.applyDiscount')
+  Route.delete('order/:id/discount', 'OrderController.removeDiscount')
   Route.resource('order', 'OrderController')
     .apiOnly()
-    .validator(new Map([[['order.store'], ['Admin/StoreOrder']]]));
+    .validator(new Map([[['order.store'], ['Order/Order']]]))
 
   /**
    * Images Resource Routes
    */
-  Route.resource('image', 'ImageController').apiOnly();
+  Route.resource('image', 'ImageController').apiOnly()
   Route.post('image/bulkUpload', 'ImageController.bulkUpload').as(
     'image.bulkUpload'
-  );
+  )
 
   /**
    * Users Resource Rotues
@@ -55,16 +55,16 @@ Route.group(() => {
     .apiOnly()
     .validator(
       new Map([
-        [['user.store'], ['Admin/StoreUser']],
-        [['user.update'], ['Admin/StoreUser']],
+        [['user.store'], ['User/StoreUser']],
+        [['user.update'], ['User/StoreUser']]
       ])
-    );
+    )
 
   /**
    * Dashboard Routes
    */
-  Route.get('dashboard', 'DashboardController.index').as('dahboard');
+  Route.get('dashboard', 'DashboardController.index').as('dahboard')
 })
   .prefix('v1/admin')
   .namespace('Admin')
-  .middleware(['auth', 'is:(admin || manager)']);
+  .middleware(['auth', 'is:(admin || manager)'])

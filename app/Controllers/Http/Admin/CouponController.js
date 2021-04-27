@@ -1,9 +1,9 @@
-'use strict';
+'use strict'
 
-const Coupon = use('App/Models/Coupon');
-const Transformer = use('App/Transformers/Coupon/CouponTransformer');
-const Database = use('Database');
-const Service = use('App/Services/Coupon/CouponService');
+const Coupon = use('App/Models/Coupon')
+const Transformer = use('App/Transformers/Coupon/CouponTransformer')
+const Database = use('Database')
+const Service = use('App/Services/Coupon/CouponService')
 /**
  * Resourceful controller for interacting with coupons
  */
@@ -21,8 +21,8 @@ class CouponController {
     const coupons = await Coupon.query().paginate(
       pagination.page,
       pagination.perpage
-    );
-    return transform.paginate(coupons, Transformer);
+    )
+    return transform.paginate(coupons, Transformer)
   }
 
   /**
@@ -34,7 +34,7 @@ class CouponController {
    * @param {Response} ctx.response
    */
   async store({ request, response, transform }) {
-    const transaction = await Database.beginTransaction();
+    const transaction = await Database.beginTransaction()
     /**
      * Abaixo seguem as opções para as quais o cupom pode ser utilizado
      *
@@ -46,8 +46,8 @@ class CouponController {
      */
     var can_use_for = {
       client: false,
-      product: false,
-    };
+      product: false
+    }
 
     try {
       const data = request.only([
@@ -57,45 +57,45 @@ class CouponController {
         'valid_until',
         'quantity',
         'type',
-        'recursive',
-      ]);
+        'recursive'
+      ])
 
-      const { users, products } = request.only(['users', 'products']);
-      const coupon = await Coupon.create(data, transaction);
-      const service = new Service(coupon, transaction);
+      const { users, products } = request.only(['users', 'products'])
+      const coupon = await Coupon.create(data, transaction)
+      const service = new Service(coupon, transaction)
       // insere os relacionamentos no DB
       if (users && users.length > 0) {
-        await service.syncUsers(users);
-        can_use_for.client = true;
+        await service.syncUsers(users)
+        can_use_for.client = true
       }
 
       if (products && products.length > 0) {
-        await service.syncProducts(products);
-        can_use_for.product = true;
+        await service.syncProducts(products)
+        can_use_for.product = true
       }
 
       if (can_use_for.product && can_use_for.client) {
-        coupon.can_use_for = 'product_client';
+        coupon.can_use_for = 'product_client'
       } else if (can_use_for.product && !can_use_for.client) {
-        coupon.can_use_for = 'product';
+        coupon.can_use_for = 'product'
       } else if (!can_use_for.product && can_use_for.client) {
-        coupon.can_use_for = 'client';
+        coupon.can_use_for = 'client'
       } else {
-        coupon.can_use_for = 'all';
+        coupon.can_use_for = 'all'
       }
 
-      await coupon.save(transaction);
+      await coupon.save(transaction)
 
-      await transaction.commit();
+      await transaction.commit()
 
       return response
         .status(201)
         .send(
           await transform.include('users,products').item(coupon, Transformer)
-        );
+        )
     } catch (error) {
-      await transaction.rollback();
-      return response.status(400).send({ message: error.message });
+      await transaction.rollback()
+      return response.status(400).send({ message: error.message })
     }
   }
 
@@ -109,8 +109,8 @@ class CouponController {
    * @param {View} ctx.view
    */
   async show({ params, request, transform }) {
-    const coupon = await Coupon.findOrFail(params.id);
-    return transform.include('products,users,orders').item(coupon, Transformer);
+    const coupon = await Coupon.findOrFail(params.id)
+    return transform.include('products,users,orders').item(coupon, Transformer)
   }
 
   /**
@@ -122,8 +122,8 @@ class CouponController {
    * @param {Response} ctx.response
    */
   async update({ params, request, response, transform }) {
-    const transaction = await Database.beginTransaction();
-    let coupon = await Coupon.findOrFail(params.id);
+    const transaction = await Database.beginTransaction()
+    let coupon = await Coupon.findOrFail(params.id)
     /**
      * Abaixo seguem as opções para as quais o cupom pode ser utilizado
      *
@@ -135,8 +135,8 @@ class CouponController {
      */
     var can_use_for = {
       client: false,
-      product: false,
-    };
+      product: false
+    }
     try {
       const data = request.only([
         'code',
@@ -145,47 +145,47 @@ class CouponController {
         'valid_until',
         'quantity',
         'type',
-        'recursive',
-      ]);
+        'recursive'
+      ])
 
-      coupon.merge(data);
+      coupon.merge(data)
 
-      await coupon.save(transaction);
+      await coupon.save(transaction)
 
-      const { users, products } = request.only(['users', 'products']);
+      const { users, products } = request.only(['users', 'products'])
 
-      const service = new Service(coupon, transaction);
+      const service = new Service(coupon, transaction)
 
       if (users.length > 0) {
-        await service.syncUsers(users);
-        can_use_for.client = true;
+        await service.syncUsers(users)
+        can_use_for.client = true
       }
 
       if (products.length > 0) {
-        await service.syncProducts(products);
-        can_use_for.product = true;
+        await service.syncProducts(products)
+        can_use_for.product = true
       }
 
       if (can_use_for.product && can_use_for.client) {
-        coupon.can_use_for = 'product_client';
+        coupon.can_use_for = 'product_client'
       } else if (can_use_for.product && !can_use_for.client) {
-        coupon.can_use_for = 'product';
+        coupon.can_use_for = 'product'
       } else if (!can_use_for.product && can_use_for.client) {
-        coupon.can_use_for = 'client';
+        coupon.can_use_for = 'client'
       } else {
-        coupon.can_use_for = 'all';
+        coupon.can_use_for = 'all'
       }
 
-      await transaction.commit();
+      await transaction.commit()
 
       return response.send(
         await transform
           .include('products,orders,users')
           .item(coupon, Transformer)
-      );
+      )
     } catch (error) {
-      await transaction.rollback();
-      return response.status(400).send({ message: error.message });
+      await transaction.rollback()
+      return response.status(400).send({ message: error.message })
     }
   }
 
@@ -198,20 +198,20 @@ class CouponController {
    * @param {Response} ctx.response
    */
   async destroy({ params, request, response }) {
-    const transaction = await Database.beginTransaction();
-    const coupon = await Coupon.findOrFail(params.id);
+    const transaction = await Database.beginTransaction()
+    const coupon = await Coupon.findOrFail(params.id)
     try {
-      await coupon.products().detach([], transaction);
-      await coupon.orders().detach([], transaction);
-      await coupon.users().detach([], transaction);
-      await coupon.delete(transaction);
-      await transaction.commit();
-      return response.status(204).send({});
+      await coupon.products().detach([], transaction)
+      await coupon.orders().detach([], transaction)
+      await coupon.users().detach([], transaction)
+      await coupon.delete(transaction)
+      await transaction.commit()
+      return response.status(204).send({})
     } catch (error) {
-      await transaction.rollback();
-      return response.status(error.status).send(error);
+      await transaction.rollback()
+      return response.status(error.status).send(error)
     }
   }
 }
 
-module.exports = CouponController;
+module.exports = CouponController
