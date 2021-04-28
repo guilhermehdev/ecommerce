@@ -17,10 +17,12 @@ module.exports = {
   | Function - Receives the current origin and should return one of the above values.
   |
   */
-  origin: Env.get('CORS_ALLOW_ORIGINS', [
-    'https://admin.adonisjs.com.br',
-    'https://adonisjs.com.br'
-  ]),
+  origin: true,
+  
+  //Env.get('CORS_ALLOW_ORIGINS', [
+  //   'https://admin.adonisjs.com.br',
+  //   'https://adonisjs.com.br'
+  // ]),
 
   /*
   |--------------------------------------------------------------------------
