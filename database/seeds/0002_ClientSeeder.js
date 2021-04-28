@@ -31,10 +31,10 @@ class ClientSeeder {
       })
     );
     const user = await User.create({
-      name: 'Thauan',
+      name: 'Guilherme',
       surname: 'Santos',
-      email: 'thauan@fsocietybrasil.org',
-      password: 'secret',
+      email: 'guilhermedev@outlook.com',
+      password: '15102016',
     });
     const adminRole = await Role.findBy('slug', 'admin');
     await user.roles().attach([adminRole.id]);
