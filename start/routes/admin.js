@@ -43,7 +43,7 @@ Route.group(() => {
   /**
    * Images Resource Routes
    */
-  Route.resource('image', 'ImageController').apiOnly()
+  Route.resource('images', 'ImageController').apiOnly()
   Route.post('image/bulkUpload', 'ImageController.bulkUpload').as(
     'image.bulkUpload'
   )
