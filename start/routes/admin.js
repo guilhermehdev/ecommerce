@@ -12,33 +12,33 @@ Route.group(() => {
   /**
    * Categories resource Routes
    */
-  Route.resource('category', 'CategoryController')
+  Route.resource('categories', 'CategoryController')
     .apiOnly()
     .validator(
       new Map([
-        [['category.store'], ['Category/Store']],
-        [['category.update'], ['Category/Update']]
+        [['categories.store'], ['Category/Store']],
+        [['categories.update'], ['Category/Update']]
       ])
     )
 
   /**
    * Products Resource Routes
    */
-  Route.resource('product', 'ProductController').apiOnly()
+  Route.resource('products', 'ProductController').apiOnly()
 
   /**
    * Coupons Resource Routes
    */
-  Route.resource('coupon', 'CouponController').apiOnly()
+  Route.resource('coupons', 'CouponController').apiOnly()
 
   /**
    * Orders Resource Routes
    */
-  Route.post('order/:id/discount', 'OrderController.applyDiscount')
-  Route.delete('order/:id/discount', 'OrderController.removeDiscount')
-  Route.resource('order', 'OrderController')
+  Route.post('orders/:id/discount', 'OrderController.applyDiscount')
+  Route.delete('orders/:id/discount', 'OrderController.removeDiscount')
+  Route.resource('orders', 'OrderController')
     .apiOnly()
-    .validator(new Map([[['order.store'], ['Order/Order']]]))
+    .validator(new Map([[['orders.store'], ['Order/Order']]]))
 
   /**
    * Images Resource Routes
@@ -51,12 +51,12 @@ Route.group(() => {
   /**
    * Users Resource Rotues
    */
-  Route.resource('user', 'UserController')
+  Route.resource('users', 'UserController')
     .apiOnly()
     .validator(
       new Map([
-        [['user.store'], ['User/StoreUser']],
-        [['user.update'], ['User/StoreUser']]
+        [['users.store'], ['User/StoreUser']],
+        [['users.update'], ['User/StoreUser']]
       ])
     )
 

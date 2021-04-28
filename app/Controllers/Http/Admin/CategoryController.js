@@ -21,7 +21,7 @@ class CategoryController {
    * @param {View} ctx.view
    * @param { transform } ctx.transform
    */
-  async index({ response, transform, pagination }) {
+  async index({request, response, transform, pagination }) {
     const { title } = request.only(['title'])
     const query = Category.query()
 
